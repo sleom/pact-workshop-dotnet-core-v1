@@ -4,6 +4,7 @@ using PactNet.Mocks.MockHttpService;
 using PactNet.Mocks.MockHttpService.Models;
 using Consumer;
 using System.Collections.Generic;
+using System.Net;
 
 namespace tests
 {
@@ -49,6 +50,37 @@ namespace tests
 
           // Assert
           Assert.Contains(invalidRequestMessage, resultBodyText);
+          Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+      }
+      
+      [Fact]
+      public void ItHandlesValidDateParam()
+      {
+          // Arange
+          var validRequestMessage = "{\"test\":\"NO\",\"validDateTime\":\"10-10-2020 00:00:00\"}";
+          _mockProviderService.Given("There is data")
+                              .UponReceiving("A valid GET request for Date Validation with valid date parameter")
+                              .With(new ProviderServiceRequest 
+                              {
+                                  Method = HttpVerb.Get,
+                                  Path = "/api/provider",
+                                  Query = "validDateTime=10/10/2020"
+                              })
+                              .WillRespondWith(new ProviderServiceResponse {
+                                  Status = 200,
+                                  Headers = new Dictionary<string, object>
+                                  {
+                                      { "Content-Type", "application/json; charset=utf-8" }
+                                  },
+                                  Body = validRequestMessage
+                              });
+          // Act
+          var result = ConsumerApiClient.ValidateDateTimeUsingProviderApi("10/10/2020", _mockProviderServiceBaseUri).GetAwaiter().GetResult();
+          var resultBodyText = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+          // Assert
+          Assert.Contains(validRequestMessage, resultBodyText);
+          Assert.Equal(HttpStatusCode.OK, result.StatusCode);
       }
     }
 }
