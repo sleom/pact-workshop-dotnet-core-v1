@@ -6,10 +6,11 @@ namespace Consumer
 {
     class Program
     {
+        static string baseUri = "http://localhost:9001";
+
         static void Main(string[] args)
         {
             string dateTimeToValidate = "05/01/2018";
-            string baseUri = "http://localhost:9000";
 
             if(args.Length <= 1)
             {
@@ -43,7 +44,7 @@ namespace Consumer
         {
             Console.WriteLine("To use with your own parameters:");
             Console.WriteLine("Usage: dotnet run [DateTime To Validate] [Provider Api Uri]");
-            Console.WriteLine("Usage Example: dotnet run 01/01/2018 http://localhost:9000");
+            Console.WriteLine($"Usage Example: dotnet run 01/01/2018 {baseUri}");
         }
     }
 }
